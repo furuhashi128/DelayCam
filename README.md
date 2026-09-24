@@ -14,14 +14,14 @@ $ python DelayCam.py
 ```
 
 ## コマンド例(windows)
-ps1を実行できるようにするコマンド
+ps1を実行できるようにするコマンド(管理者権限必要)
 ```
 $ Set-ExecutionPolicy RemoteSigned
 ```
 ライブラリインストール
 ```
 $ python -m venv .venv
-$ source .venv\Scripts\Activate.ps1
+$ .venv\Scripts\Activate.ps1
 $ pip install opencv-python
 ```
 実行
