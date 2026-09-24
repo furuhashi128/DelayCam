@@ -18,6 +18,9 @@ def main():
     delay_sec = 5
     max_delay_sec = 30
     min_delay_sec = 1
+
+    # いろいろな設定
+    flip_en = True # 左右反転
     
     # 30秒分のフレームを保持できるキューを作成
     max_frames = int(max_delay_sec * fps)
@@ -50,19 +53,25 @@ def main():
         else:
             # 指定フレーム数前の映像を取得
             display_frame = frame_buffer[-target_delay_frames].copy()
+
+        # 必要なら左右反転
+        if(flip_en): 
+            display_frame = cv2.flip(display_frame, 1)
+        
             
         # 小窓（現在のリアルタイム映像）の生成
         h, w = frame.shape[:2]
         pip_w = int(w * pip_scale)
         pip_h = int(h * pip_scale)
         pip_frame = cv2.resize(frame, (pip_w, pip_h))
+        pip_frame = cv2.flip(pip_frame, 1) # 左右反転(鏡写し)
         
         # 小窓を画面右下に配置
         display_frame[h - pip_h:h, w - pip_w:w] = pip_frame
         
         # UI情報の描画
         ui_text_delay = f"Delay: {delay_sec} sec"
-        ui_text_keys = "Keys: 'w'=+1s, 's'=-1s, 'q'=quit"
+        ui_text_keys = "Keys: 'w'=+1s, 's'=-1s, 'f'=flip, 'q'=quit"
         
         # テキストの背景に黒い帯を入れると視認性が上がるが、今回はシンプルに描画
         cv2.putText(display_frame, ui_text_delay, (10, 30), 
@@ -80,6 +89,8 @@ def main():
             delay_sec = min(delay_sec + 1, max_delay_sec)
         elif key == ord('s'):
             delay_sec = max(delay_sec - 1, min_delay_sec)
+        elif key == ord('f'):
+            flip_en = not flip_en
             
     # リソースの解放
     cap.release()
