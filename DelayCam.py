@@ -1,13 +1,25 @@
 import cv2
 import collections
+import argparse
 
 def main():
+
+    CAM_WIDTH = 640
+    CAM_HEIGHT = 480
+
+    # 引数解析
+    parser = argparse.ArgumentParser(description='Delay Camera')
+
+    parser.add_argument('-d', '--dispsize', type=float, default=1.0, help="Display size ratio. default = (1.0 * 640, 1.0 * 480)")
+
+    args = parser.parse_args()
+
     # カメラの初期化（デバイスID: 0）
     cap = cv2.VideoCapture(0)
     
     # 指定の解像度に設定
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, CAM_WIDTH)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, CAM_HEIGHT)
     
     # カメラの実際のFPSを取得（取得不可のデバイスの場合は30と仮定）
     fps = cap.get(cv2.CAP_PROP_FPS)
@@ -21,6 +33,9 @@ def main():
 
     # いろいろな設定
     flip_en = True # 左右反転
+    disp_width = int(CAM_WIDTH * args.dispsize)    # 表示サイズ
+    disp_height = int(CAM_HEIGHT * args.dispsize)  # 表示サイズ
+    
     
     # 30秒分のフレームを保持できるキューを作成
     max_frames = int(max_delay_sec * fps)
@@ -68,6 +83,9 @@ def main():
         
         # 小窓を画面右下に配置
         display_frame[h - pip_h:h, w - pip_w:w] = pip_frame
+
+        # 表示サイズの変更
+        display_frame = cv2.resize(display_frame, (disp_width, disp_height))
         
         # UI情報の描画
         ui_text_delay = f"Delay: {delay_sec} sec"
